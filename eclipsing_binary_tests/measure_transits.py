@@ -20,6 +20,20 @@ def load_ebs():
     cvzs = ebs.query("n_sectors > 10").sort_index()
     return cvzs
 
+def plot_transits(lc, stats, save_path):
+    ax = lc.plot()
+    ax.legend().remove()
+    
+    ymin, ymax = ax.get_ylim()
+    
+    med_flux = np.median(lc.flux.value)
+    
+    ax.vlines(stats["transit_times"].value, ymin=ymin, ymax=ymax, color="k", linestyle=":", alpha=0.3)
+    ax.axhline(med_flux - stats["depth"][0].value, color="k")
+    ax.axhline(med_flux, color="k")
+    plt.tight_layout()
+    plt.savefig(save_path)
+    plt.close()
 
 
 if __name__ == "__main__":
@@ -56,18 +70,6 @@ if __name__ == "__main__":
             except ValueError:
                 print(f"Period ({p0:.3f}) and Duration ({dur:.3f}) break the periodogram. Skipping.")
                 continue
-                
-            ax = lc.plot()
-            ax.legend().remove()
-            
-            ymin, ymax = ax.get_ylim()
-            
-            med_flux = np.median(lc.flux.value)
             
             stats = pg.compute_stats()
-            ax.vlines(stats["transit_times"].value, ymin=ymin, ymax=ymax, color="k", linestyle=":", alpha=0.3)
-            ax.axhline(med_flux - stats["depth"][0].value, color="k")
-            ax.axhline(med_flux, color="k")
-            plt.tight_layout()
-            plt.savefig(os.path.join(path, f"TIC{tic:010d}-s{sector:04d}.png"))
-            plt.close()
+            plot_transits(lc, stats, save_path=os.path.join(path, f"TIC{tic:010d}-s{sector:04d}.png"))
