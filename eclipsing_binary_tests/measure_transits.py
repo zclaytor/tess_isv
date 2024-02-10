@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 
 import lightkurve as lk
 
+
+root = "ebs_astropy"
+
    
 def count_sectors(val):
     return len(val.split(","))
@@ -39,7 +42,6 @@ def plot_transits(lc, stats, save_path):
 if __name__ == "__main__":
     cvzs = load_ebs()
 
-    plt.close("all")
     for tic, row in cvzs.iterrows():
         p0 = row["period"]
         dur = row["prim_width_2g"]
@@ -58,13 +60,12 @@ if __name__ == "__main__":
         os.makedirs(path, exist_ok=True)
         lcs = lcs[np.argsort([l.sector for l in lcs])]
         
+
         for lc in lcs:
             sector = lc.sector
             camera = lc.camera
             ccd = lc.ccd
             
-            print(tic, sector)
-
             try:
                 pg = lc.to_periodogram("bls", minimum_period=p0/1.5, maximum_period=3*p0)
             except ValueError:
