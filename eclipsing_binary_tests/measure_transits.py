@@ -56,7 +56,7 @@ if __name__ == "__main__":
             sector=[l.sector for l in lcs])
         tpfs = sr.download_all(quality_bitmask="hard")
         
-        path = f"ebs_astropy/{tic:010d}"
+        path = os.path.join(root, f"{tic:010d}")
         os.makedirs(path, exist_ok=True)
         lcs = lcs[np.argsort([l.sector for l in lcs])]
         
