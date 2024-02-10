@@ -1,4 +1,5 @@
 import os 
+import sys
 
 import numpy as np
 import pandas as pd
@@ -8,8 +9,8 @@ import lightkurve as lk
 from lightkurve.interact import _get_corrected_coordinate as getcoord
 
 
-root = "ebs_astropy"
-download_dir="."
+root = "plots"
+download_dir="../data"
    
 def count_sectors(val):
     return len(val.split(","))
@@ -49,6 +50,13 @@ def plot_transits(lc, stats, save_path):
 if __name__ == "__main__":
     cvzs = load_ebs()
 
+    print("TIC,sector,camera,ccd," 
+        "target_x,target_y,crowdsap,flfrcsap,"
+        "period,duration,btjd0,flux_median,e_flux_median,"
+        "primary_depth,primary_std",
+        #"secondary_depth,secondary_std,"
+        sep=",", file=sys.stdout)
+
     for tic, row in cvzs.iterrows():
         p0 = row["period"]
         dur = row["prim_width_2g"]
@@ -77,7 +85,8 @@ if __name__ == "__main__":
             try:
                 pg = lc.to_periodogram("bls", minimum_period=p0/1.5, maximum_period=1.5*p0)
             except ValueError:
-                print(f"Period ({p0:.3f}) and Duration ({dur:.3f}) break the periodogram. Skipping.")
+                print(f"Period ({p0:.3f}) and Duration ({dur:.3f}) break the periodogram. Skipping.", 
+                    file=sys.stderr)
                 continue
             
             period = pg.period_at_max_power.value
@@ -99,4 +108,4 @@ if __name__ == "__main__":
                 flux_median, flux_std,
                 primary_depth.value, primary_std.value, 
                 #secondary_depth, secondary_std, 
-                sep=",")
+                sep=",", file=sys.stdout)
