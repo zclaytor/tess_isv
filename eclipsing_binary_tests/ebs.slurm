@@ -11,4 +11,4 @@
 
 module load conda
 conda activate kbonus
-python measure_transits.py
+python -u measure_transits.py
