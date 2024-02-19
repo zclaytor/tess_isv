@@ -1,5 +1,6 @@
 data/mastDownload
 */__pycache__
+*.ipynb_checkpoints
 eclipsing_binary_tests/plots
 *.out
 *.err
